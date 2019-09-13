@@ -1,49 +1,73 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Administrator
- * Date: 2019/9/11
- * Time: 16:20
- */
+
 
 namespace core\framework;
-
+use \core\framework\functions\Arr;
 
 class Route
 {
 
-    protected $uri;
-    protected $method;
+    protected $uri; //去除域名后的路径
+   
+    protected $hub;
 
 
     public function __construct()
     {
-        $this->uri = $this->getUri();
-
-        $this->parseUri($this->uri);
+        $this->getUri();
+        $this->parseUri();
+        $this->dispatch();
     }
 
     public function getUri(){
-        return \Arr::get($_SERVER, 'REQUEST_URI');
+        $this->uri = Arr::get($_SERVER, 'REQUEST_URI');
+        return $this->uri;
     }
 
-    public function parseUri($uri){
-
+    public function parseUri($uri="") :array{
+        $uri = !empty($uri) ? $uri : $this->uri;
         $arr=explode("/",$uri);
         $arr=array_filter($arr);
-        var_dump($arr);
-        echo count($arr);
-        if(count($arr)<3 || empty($arr)){
-            throw new \Exception('URI is invalid!');
-        }
-        if(count($arr)>3 && count($arr)%2 == 0){
-            throw new \Exception('URI PARAMS is invalid!');
-        }
-        $module=$arr[1];
-        $controller=$arr[2];
-        $action=$arr[3];
-    }
-    public function dispatch(){
+        $this->hub = [
+            "module" => "",
+            "controller" => "",
+            "action" => "",
+            "params" => [],
+        ];
+        if(count($arr)<3 || empty($arr)){ 
+            //url不合法跳默认路由
+            $this->hub['module']     = "common";
+            $this->hub['controller'] = "index";
+            $this->hub['action']     = "index";
+        }else{
+            $params = [];
+            if(count($arr)>3 && count($arr)%2 == 0){
+                throw new \Exception('URI PARAMS is invalid!');
+            }else{
+                $args = array_slice($arr,3);
+                for($i=0; $i<count($args);$i=$i+2){
+                    $params[$args[$i]]=$args[$i+1];
+                }
+            }
+            $this->hub['module']     = $arr[1];
+            $this->hub['controller'] = $arr[2];
+            $this->hub['action']     = $arr[3];
+            $this->hub['params']     = $params;
 
+        }
+
+        return $this->hub;
+      
+    }
+
+    public function dispatch($hub=[]){
+        $hub = !empty($hub) ? $hub  :  $this->hub;
+        $str = "\\app\\".$hub['module']."\controller\\".$hub['controller'];
+        $reflector= new \ReflectionClass($str);
+        $class = $reflector->newInstance();
+
+        call_user_func_array([$class,$hub['action']],$hub['params']);
+
+       
     }
 }

@@ -2,7 +2,7 @@
 namespace app\common\controller;
 class Index
 {
-    public function index(){
-
+    public function index($id=0){
+       echo "index".$id;
     }
 }

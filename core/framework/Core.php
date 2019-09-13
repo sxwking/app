@@ -19,12 +19,11 @@ class Core
 
     public function run(){
         
-        echo microtime();
+        echo microtime()."<br>";
 
         $this->getRouter();
 
-
-        echo microtime();
+        echo "<br>".microtime();
 
     }
 
