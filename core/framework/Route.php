@@ -63,8 +63,7 @@ class Route
     public function dispatch($hub=[]){
         $hub = !empty($hub) ? $hub  :  $this->hub;
         $str = "\\app\\".$hub['module']."\controller\\".$hub['controller'];
-        $reflector= new \ReflectionClass($str);
-        $class = $reflector->newInstance();
+        $class = new $str();
 
         call_user_func_array([$class,$hub['action']],$hub['params']);
 
