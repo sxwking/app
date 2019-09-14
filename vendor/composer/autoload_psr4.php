@@ -8,4 +8,6 @@ $baseDir = dirname($vendorDir);
 return array(
     'core\\' => array($baseDir . '/core'),
     'app\\' => array($baseDir . '/app'),
+    'Whoops\\' => array($vendorDir . '/filp/whoops/src/Whoops'),
+    'Psr\\Log\\' => array($vendorDir . '/psr/log/Psr/Log'),
 );
