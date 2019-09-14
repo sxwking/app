@@ -11,5 +11,5 @@ if($debug==true){
     ini_set("display_errors","Off");
 }
 
+\core\framework\Container::get('core')->run();
 
-\core\framework\Core::getInstance()->run();

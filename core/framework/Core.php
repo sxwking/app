@@ -7,7 +7,7 @@ class Core
     protected static $instance = null;
     protected $router;
 
-    protected function __construct(){
+    function __construct(){
     }
 
     public static function getInstance(){
